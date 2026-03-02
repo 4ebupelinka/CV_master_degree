@@ -4,6 +4,13 @@ __generated_with = "0.20.2"
 app = marimo.App(width="medium")
 
 
+@app.cell
+def _():
+    import marimo as mo
+
+    return (mo,)
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
@@ -19,6 +26,8 @@ def _(mo):
     **Лоссы:** CrossEntropy
 
     **Что перебрать:** lr {0.1, 0.01, 0.001}
+
+    GitHub: https://github.com/4ebupelinka/CV_master_degree/tree/main/Second_sem/HW_1
     """)
     return
 
@@ -226,13 +235,6 @@ def _(plt, results):
 @app.cell
 def _():
     return
-
-
-@app.cell
-def _():
-    import marimo as mo
-
-    return (mo,)
 
 
 if __name__ == "__main__":
