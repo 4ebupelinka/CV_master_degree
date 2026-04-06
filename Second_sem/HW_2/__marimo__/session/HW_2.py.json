@@ -1,0 +1,169 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.20.2"
+  },
+  "cells": [
+    {
+      "id": "DnEU",
+      "code_hash": "bb2ba336f83d598076badf48f829585d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusions\">Conclusions</h2>\n<span class=\"paragraph\">The model was trained on scraped web images of Toyota, BMW, and other car models.\nAfter cleaning duplicates and manually filtering, the dataset was split into train/val.</span>\n<span class=\"paragraph\"><strong>Validation performance</strong>: ~XX% accuracy (depends on data quality).</span>\n<span class=\"paragraph\"><strong>Generalization</strong>: The model's performance on manually taken photos (different\nangles, lighting, partial occlusion, background clutter) indicates its ability\nto handle real-world conditions. Lower accuracy on custom test set suggests\ndomain shift between web images and phone photos.</span>\n<span class=\"paragraph\"><strong>Impact of data quality</strong>: Removing duplicates and low-quality images improved\ntraining stability. Adding augmentations (flip, color jitter) helped robustness.\nHowever, the model still struggles with extreme cases (heavy shadows, very\npartial views). More diverse training data (including such challenging examples)\nwould likely improve generalization.</span>\n<span class=\"paragraph\"><strong>Out-of-distribution robustness</strong>: The \"other\" class includes many different\nbrands, which makes the model learn features of non-Toyota/non-BMW cars.\nThis helps avoid overfitting to specific brands.</span>\n<span class=\"paragraph\"><strong>Future improvements</strong>:</span>\n<ul>\n<li>Collect more edge-case images (night, rain, cropped views) and add to training.</li>\n<li>Use a stronger backbone (ResNet50) or apply transfer learning with unfreezing more layers.</li>\n<li>Experiment with Focal Loss to handle class imbalance if present.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "61105ea4b6182cac450cfadf36aec96a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "089e5ca261d6da64f51bba4d852ac6b3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Using device: cpu\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "d9a91b5bdb11849cfd7c80bba45b66d2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "09bf8d6fefa41d0825f800b8af86e576",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "f852d8641f566b0de0392694526bb14c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "a8f0156064fa25f8ecc614fcb70f3d19",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "06e8d67807e7a75a62cb690e4f23670b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "f4c3d63fb5f772f5fc414d9dfef8d102",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "9edc67fa2de266fbd3738a584ddfa54f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "bb422f7f8ece8d60ec23de1a57b51269",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "4a6a3a8d908fee84aa8fae40ab4cf962",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "dfad99b449c3ce8dda9bea6bc0b8835e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "d6afc326d8d9bd533d453ab96b0f0515",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "184fa967c4ccccd0b5613417710caca1",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "1a487db11cd0e47d3ec132a46f5cc904",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "bd874c391062e9b9d94b1fda29a7b6e4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "b987e7b35a1f3734beb741d1c45c8479",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "b900c55e220a5942732665ca1de8f88c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "2f2ced0e401c19515688eec57b48ef5e",
+      "outputs": [],
+      "console": []
+    }
+  ]
+}
