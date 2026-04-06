@@ -17,13 +17,16 @@
 
 import marimo
 
-__generated_with = "0.12.8"
-app = marimo.App(width="medium")
+__generated_with = "0.19.9"
+app = marimo.App(width="medium", layout_file="layouts/HW_2.slides.json")
+
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
+
 
 @app.cell
 def _():
@@ -39,6 +42,7 @@ def _():
     from torchvision.io import decode_image, ImageReadMode
     import matplotlib.pyplot as plt
     import seaborn as sns
+    from sklearn.model_selection import train_test_split
     from sklearn.metrics import confusion_matrix, classification_report
     from tqdm import tqdm
     from pathlib import Path
@@ -50,9 +54,11 @@ def _():
     return (
         DataLoader,
         Dataset,
-        DDGS,
         Image,
         ImageReadMode,
+        Path,
+        classification_report,
+        confusion_matrix,
         decode_image,
         imagehash,
         models,
@@ -64,14 +70,15 @@ def _():
         random,
         shutil,
         sns,
+        torch,
         tqdm,
+        train_test_split,
         transforms,
-        warnings,
     )
 
+
 @app.cell
-def _():
-    # Set seed for reproducibility
+def _(np, random, torch):
     seed = 42
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
@@ -82,103 +89,29 @@ def _():
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
-    return device, seed
+    return (device,)
+
 
 @app.cell
 def _():
-    # Define classes
-    CLASSES = ['toyota', 'bmw', 'other']
+    CLASSES = ['honda', 'toyota', 'others']
     NUM_CLASSES = len(CLASSES)
     return CLASSES, NUM_CLASSES
 
+
 @app.cell
-def _():
-    # -------------------------------
-    # 1. Data Collection via Web Scraping
-    # -------------------------------
-    # We'll download images using DuckDuckGo (free, no API key)
-    # For each class we define search queries to get variety
-
-    def download_images(query, save_dir, limit=100):
-        """Download images using DDGS and save to save_dir."""
-        save_dir = Path(save_dir)
-        save_dir.mkdir(parents=True, exist_ok=True)
-        with DDGS() as ddgs:
-            results = ddgs.images(query, max_results=limit)
-            for i, res in enumerate(results):
-                try:
-                    image_url = res['image']
-                    # Simple download using requests
-                    import requests
-                    response = requests.get(image_url, timeout=10)
-                    if response.status_code == 200:
-                        # Save as jpg
-                        img_path = save_dir / f"{query.replace(' ', '_')}_{i}.jpg"
-                        with open(img_path, 'wb') as f:
-                            f.write(response.content)
-                except Exception as e:
-                    print(f"Failed to download {image_url}: {e}")
-        print(f"Downloaded {len(list(save_dir.glob('*.jpg')))} images for query '{query}'")
-
-    # Define queries for each class
-    toyota_queries = [
-        "Toyota car front view", "Toyota sedan street", "Toyota Camry side",
-        "Toyota Corolla rear", "Toyota car parking", "Toyota SUV road",
-        "Toyota car driving", "Toyota car closeup"
-    ]
-    bmw_queries = [
-        "BMW car front", "BMW sedan street", "BMW 3 series side",
-        "BMW X5 road", "BMW car parking", "BMW car driving",
-        "BMW car rear view", "BMW M4 closeup"
-    ]
-    other_queries = [
-        "Audi car street", "Mercedes car front", "Ford car road",
-        "Hyundai car side", "Kia car parking", "Nissan car driving",
-        "Volkswagen car", "Skoda car", "Renault car", "Lada car"
-    ]
-
-    # Download about 500-1000 per class. Let's target 600 per class
-    # For each query, download ~75 images => 8*75=600
-    # We'll store raw images in data/raw/class_name/
-
+def _(CLASSES, Path):
     raw_data_root = Path("data/raw")
-    for cls in CLASSES:
-        (raw_data_root / cls).mkdir(parents=True, exist_ok=True)
-
-    # Uncomment the following blocks to actually download (may take time)
-    # We'll keep them commented initially to avoid accidental downloads during development.
-    # You can run these cells when ready.
-
-    # For Toyota
-    # for q in toyota_queries:
-    #     download_images(q, raw_data_root / 'toyota', limit=75)
-
-    # For BMW
-    # for q in bmw_queries:
-    #     download_images(q, raw_data_root / 'bmw', limit=75)
-
-    # For Other
-    # for q in other_queries:
-    #     download_images(q, raw_data_root / 'other', limit=75)
-    return download_images, raw_data_root, toyota_queries, bmw_queries, other_queries
-
-@app.cell
-def _(raw_data_root):
-    # After downloading, count images
     print("Raw image counts:")
-    for cls in CLASSES:
-        folder = raw_data_root / cls
-        count = len(list(folder.glob('*.jpg'))) + len(list(folder.glob('*.png')))
-        print(f"{cls}: {count}")
-    return
+    for _cls in CLASSES:
+        _folder = raw_data_root / _cls
+        _count = len(list(_folder.glob('*.jpg'))) + len(list(_folder.glob('*.png')))
+        print(f"{_cls}: {_count}")
+    return (raw_data_root,)
+
 
 @app.cell
-def _(CLASSES, imagehash, np, os, Path, raw_data_root):
-    # -------------------------------
-    # 2. Remove duplicates and near-duplicates using perceptual hash
-    # -------------------------------
-    from PIL import Image
-
+def _(CLASSES, Image, Path, imagehash, os, raw_data_root):
     def remove_duplicates(class_dir, hash_size=8, threshold=5):
         """Remove near-duplicate images based on pHash difference."""
         class_dir = Path(class_dir)
@@ -236,101 +169,52 @@ def _(CLASSES, imagehash, np, os, Path, raw_data_root):
         folder = raw_data_root / cls
         count = len(list(folder.glob('*.jpg'))) + len(list(folder.glob('*.png')))
         print(f"{cls}: {count}")
-    return remove_duplicates, remove_small_images
+    return
+
 
 @app.cell
 def _(CLASSES, raw_data_root):
-    # -------------------------------
-    # 3. Manual cleaning: show images and let user delete unwanted ones
-    # -------------------------------
-    import matplotlib.pyplot as plt
-
-    def manual_clean_class(class_dir, rows=4, cols=5):
-        """Display images in a grid and ask user for indices to delete."""
-        class_dir = Path(class_dir)
-        image_paths = list(class_dir.glob('*.jpg')) + list(class_dir.glob('*.png'))
-        if not image_paths:
-            print(f"No images in {class_dir}")
-            return
-
-        # Show in batches
-        for start in range(0, len(image_paths), rows*cols):
-            end = min(start + rows*cols, len(image_paths))
-            batch = image_paths[start:end]
-            fig, axes = plt.subplots(rows, cols, figsize=(15, 12))
-            axes = axes.flatten()
-            for idx, ax in enumerate(axes):
-                if idx < len(batch):
-                    img = plt.imread(batch[idx])
-                    ax.imshow(img)
-                    ax.set_title(f"{start+idx}", fontsize=8)
-                    ax.axis('off')
-                else:
-                    ax.axis('off')
-            plt.tight_layout()
-            plt.show()
-            print(f"Images {start} to {end-1}. Enter indices to delete (comma-separated) or 'n' to skip, 'q' to quit:")
-            user_input = input().strip()
-            if user_input.lower() == 'q':
-                break
-            if user_input.lower() != 'n':
-                indices = [int(i.strip()) for i in user_input.split(',') if i.strip().isdigit()]
-                for idx in indices:
-                    if start <= idx < end:
-                        path = batch[idx - start]
-                        os.remove(path)
-                        print(f"Deleted {path.name}")
-            plt.close(fig)
-
-    # Uncomment to run manual cleaning for each class
-    # for cls in CLASSES:
-    #     manual_clean_class(raw_data_root / cls, rows=5, cols=6)
-    return (manual_clean_class,)
-
-@app.cell
-def _(CLASSES, raw_data_root):
-    # Final count after manual cleaning
-    print("\nFinal image counts after manual cleaning:")
+    print("\nFinal image counts after cleaning:")
     for cls in CLASSES:
         folder = raw_data_root / cls
         count = len(list(folder.glob('*.jpg'))) + len(list(folder.glob('*.png')))
         print(f"{cls}: {count}")
     return
 
-@app.cell
-def _(CLASSES, Path, raw_data_root):
-    # -------------------------------
-    # 4. Split data into train/val (80/20) preserving class distribution
-    # -------------------------------
-    from sklearn.model_selection import train_test_split
 
+@app.cell
+def _(CLASSES, Path, raw_data_root, shutil, train_test_split):
     train_root = Path("data/train")
     val_root = Path("data/val")
     for split in [train_root, val_root]:
-        for cls in CLASSES:
-            (split / cls).mkdir(parents=True, exist_ok=True)
+        for _cls in CLASSES:
+            (split / _cls).mkdir(parents=True, exist_ok=True)
 
     # Copy files
-    for cls in CLASSES:
-        src_dir = raw_data_root / cls
+    for _cls in CLASSES:
+        src_dir = raw_data_root / _cls
         images = list(src_dir.glob('*.jpg')) + list(src_dir.glob('*.png'))
         # Split
         train_imgs, val_imgs = train_test_split(images, test_size=0.2, random_state=42)
         for img in train_imgs:
-            shutil.copy(img, train_root / cls / img.name)
+            shutil.copy(img, train_root / _cls / img.name)
         for img in val_imgs:
-            shutil.copy(img, val_root / cls / img.name)
-        print(f"{cls}: train={len(train_imgs)}, val={len(val_imgs)}")
+            shutil.copy(img, val_root / _cls / img.name)
+        print(f"{_cls}: train={len(train_imgs)}, val={len(val_imgs)}")
     return train_root, val_root
 
-@app.cell
-def _(CLASSES, train_root, val_root):
-    # -------------------------------
-    # 5. Dataset class (similar to PDF) and transforms
-    # -------------------------------
-    from torch.utils.data import Dataset
-    from torchvision.io import decode_image, ImageReadMode
 
+@app.cell
+def _(
+    CLASSES,
+    Dataset,
+    ImageReadMode,
+    Path,
+    decode_image,
+    train_root,
+    transforms,
+    val_root,
+):
     class CarDataset(Dataset):
         def __init__(self, root_dir, transform=None):
             self.root_dir = Path(root_dir)
@@ -359,13 +243,13 @@ def _(CLASSES, train_root, val_root):
         transforms.Resize((224, 224)),
         transforms.RandomHorizontalFlip(p=0.5),
         transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
-        transforms.ToDtype(torch.float32, scale=True),
+        transforms.ToTensor(), 
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
     val_transforms = transforms.Compose([
         transforms.Resize((224, 224)),
-        transforms.ToDtype(torch.float32, scale=True),
+        transforms.ToTensor(),  # Аналогично для валидации
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
@@ -373,7 +257,8 @@ def _(CLASSES, train_root, val_root):
     val_dataset = CarDataset(val_root, transform=val_transforms)
 
     print(f"Train size: {len(train_dataset)}, Val size: {len(val_dataset)}")
-    return CarDataset, train_dataset, train_transforms, val_dataset, val_transforms
+    return CarDataset, train_dataset, val_dataset, val_transforms
+
 
 @app.cell
 def _(DataLoader, train_dataset, val_dataset):
@@ -381,7 +266,8 @@ def _(DataLoader, train_dataset, val_dataset):
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
     print(f"Batches: train={len(train_loader)}, val={len(val_loader)}")
-    return batch_size, train_loader, val_loader
+    return train_loader, val_loader
+
 
 @app.cell
 def _(CLASSES, plt, sns, train_dataset, val_dataset):
@@ -407,10 +293,11 @@ def _(CLASSES, plt, sns, train_dataset, val_dataset):
     axes[1].tick_params(axis='x', rotation=45)
     plt.tight_layout()
     plt.show()
-    return axes, fig, train_counts, val_counts
+    return
+
 
 @app.cell
-def _(NUM_CLASSES, models, nn, torch):
+def _(NUM_CLASSES, device, models, nn, optim):
     # -------------------------------
     # 6. Define model (fine-tuning approach)
     # -------------------------------
@@ -428,10 +315,11 @@ def _(NUM_CLASSES, models, nn, torch):
     model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-4)
-    return ResNetForFineTune, criterion, model, optimizer
+    return criterion, model, optimizer
+
 
 @app.cell
-def _(tqdm):
+def _(torch, tqdm):
     # -------------------------------
     # 7. Training and evaluation functions (as in PDF)
     # -------------------------------
@@ -492,17 +380,28 @@ def _(tqdm):
                 torch.save(model.state_dict(), 'best_model.pth')
                 print("Saved best model!")
         return train_losses, val_losses, train_accs, val_accs
-    return test, train, train_loop
+
+    return (train_loop,)
+
 
 @app.cell
-def _(device, model, criterion, optimizer, train_loader, val_loader, train_loop):
+def _(
+    criterion,
+    device,
+    model,
+    optimizer,
+    train_loader,
+    train_loop,
+    val_loader,
+):
     # -------------------------------
     # 8. Train the model
     # -------------------------------
     num_epochs = 15
     history = train_loop(model, criterion, optimizer, train_loader, val_loader, device, num_epochs)
     train_losses, val_losses, train_accs, val_accs = history
-    return history, num_epochs, train_accs, train_losses, val_accs, val_losses
+    return train_accs, train_losses, val_accs, val_losses
+
 
 @app.cell
 def _(plt, train_accs, train_losses, val_accs, val_losses):
@@ -527,8 +426,20 @@ def _(plt, train_accs, train_losses, val_accs, val_losses):
     plt.show()
     return
 
+
 @app.cell
-def _(CLASSES, classification_report, confusion_matrix, device, model, np, plt, sns, val_loader):
+def _(
+    CLASSES,
+    classification_report,
+    confusion_matrix,
+    device,
+    model,
+    np,
+    plt,
+    sns,
+    torch,
+    val_loader,
+):
     # -------------------------------
     # 9. Evaluate on validation set
     # -------------------------------
@@ -561,10 +472,11 @@ def _(CLASSES, classification_report, confusion_matrix, device, model, np, plt, 
     print(report)
     print(f"Accuracy: {acc:.4f}")
     plot_confusion_matrix(cm, CLASSES)
-    return cm, evaluate_model, plot_confusion_matrix, report, acc
+    return (evaluate_model,)
+
 
 @app.cell
-def _(Path):
+def _(CLASSES, Path):
     # -------------------------------
     # 10. Custom test set (manually taken photos)
     # -------------------------------
@@ -580,10 +492,19 @@ def _(Path):
         print("Created custom_test folder. Please add your own photos into the class subfolders.")
     return (custom_test_root,)
 
+
 @app.cell
-def _(CLASSES, Path, custom_test_root, evaluate_model, model, val_transforms, device):
-    # Load custom dataset if exists
-    from torch.utils.data import DataLoader
+def _(
+    CLASSES,
+    CarDataset,
+    DataLoader,
+    custom_test_root,
+    device,
+    evaluate_model,
+    model,
+    val_transforms,
+):
+
     if custom_test_root.exists() and any((custom_test_root / cls).iterdir() for cls in CLASSES):
         custom_dataset = CarDataset(custom_test_root, transform=val_transforms)
         custom_loader = DataLoader(custom_dataset, batch_size=32, shuffle=False)
@@ -597,8 +518,9 @@ def _(CLASSES, Path, custom_test_root, evaluate_model, model, val_transforms, de
         print("No custom test images found. Please add your photos to data/custom_test/class/")
     return
 
+
 @app.cell
-def _():
+def _(mo):
     # -------------------------------
     # 11. Analysis of generalization and edge cases
     # -------------------------------
@@ -631,6 +553,7 @@ def _():
     - Experiment with Focal Loss to handle class imbalance if present.
     """)
     return
+
 
 if __name__ == "__main__":
     app.run()

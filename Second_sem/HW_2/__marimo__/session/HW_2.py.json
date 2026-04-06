@@ -1,11 +1,11 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.20.2"
+    "marimo_version": "0.19.9"
   },
   "cells": [
     {
-      "id": "DnEU",
+      "id": "TqIu",
       "code_hash": "bb2ba336f83d598076badf48f829585d",
       "outputs": [
         {
@@ -20,148 +20,108 @@
     {
       "id": "Hbol",
       "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
       "id": "MJUe",
-      "code_hash": "61105ea4b6182cac450cfadf36aec96a",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "code_hash": "cb1b353d22d8d770eb4f3b3982977d2e",
+      "outputs": [],
       "console": []
     },
     {
       "id": "vblA",
-      "code_hash": "089e5ca261d6da64f51bba4d852ac6b3",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stdout",
-          "text": "Using device: cpu\n",
-          "mimetype": "text/plain"
-        }
-      ]
+      "code_hash": "d088a9ac1b6d84dc68da329c2fe91258",
+      "outputs": [],
+      "console": []
     },
     {
       "id": "bkHC",
-      "code_hash": "d9a91b5bdb11849cfd7c80bba45b66d2",
+      "code_hash": "f1b6a6a0567b1ea9625811d66beef5a5",
       "outputs": [],
       "console": []
     },
     {
       "id": "lEQa",
-      "code_hash": "09bf8d6fefa41d0825f800b8af86e576",
+      "code_hash": "feb2d394fb53ac047e33e2f2d1a6955f",
       "outputs": [],
       "console": []
     },
     {
       "id": "PKri",
-      "code_hash": "f852d8641f566b0de0392694526bb14c",
+      "code_hash": "ce3d762b77e23fbe7247741e732dc701",
       "outputs": [],
       "console": []
     },
     {
       "id": "Xref",
-      "code_hash": "a8f0156064fa25f8ecc614fcb70f3d19",
+      "code_hash": "7241604721a3bf4a8528c2dc11ec39d5",
       "outputs": [],
       "console": []
     },
     {
       "id": "SFPL",
-      "code_hash": "06e8d67807e7a75a62cb690e4f23670b",
+      "code_hash": "aa3441b20b5682460da4d17400a0a4c5",
       "outputs": [],
       "console": []
     },
     {
       "id": "BYtC",
-      "code_hash": "f4c3d63fb5f772f5fc414d9dfef8d102",
+      "code_hash": "3acd6a8a9bd085f8d77a76422652d453",
       "outputs": [],
       "console": []
     },
     {
       "id": "RGSE",
-      "code_hash": "9edc67fa2de266fbd3738a584ddfa54f",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "Kclp",
-      "code_hash": "bb422f7f8ece8d60ec23de1a57b51269",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "emfo",
       "code_hash": "4a6a3a8d908fee84aa8fae40ab4cf962",
       "outputs": [],
       "console": []
     },
     {
-      "id": "Hstk",
+      "id": "Kclp",
       "code_hash": "dfad99b449c3ce8dda9bea6bc0b8835e",
       "outputs": [],
       "console": []
     },
     {
-      "id": "nWHF",
+      "id": "emfo",
       "code_hash": "d6afc326d8d9bd533d453ab96b0f0515",
       "outputs": [],
       "console": []
     },
     {
-      "id": "iLit",
+      "id": "Hstk",
       "code_hash": "184fa967c4ccccd0b5613417710caca1",
       "outputs": [],
       "console": []
     },
     {
-      "id": "ZHCJ",
+      "id": "nWHF",
       "code_hash": "1a487db11cd0e47d3ec132a46f5cc904",
       "outputs": [],
       "console": []
     },
     {
-      "id": "ROlb",
+      "id": "iLit",
       "code_hash": "bd874c391062e9b9d94b1fda29a7b6e4",
       "outputs": [],
       "console": []
     },
     {
-      "id": "qnkX",
+      "id": "ZHCJ",
       "code_hash": "b987e7b35a1f3734beb741d1c45c8479",
       "outputs": [],
       "console": []
     },
     {
-      "id": "TqIu",
+      "id": "ROlb",
       "code_hash": "b900c55e220a5942732665ca1de8f88c",
       "outputs": [],
       "console": []
     },
     {
-      "id": "Vxnm",
-      "code_hash": "2f2ced0e401c19515688eec57b48ef5e",
+      "id": "qnkX",
+      "code_hash": "2f7ae43e1e4e960f38ebd8e35b5ef6da",
       "outputs": [],
       "console": []
     }
